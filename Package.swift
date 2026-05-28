@@ -22,13 +22,10 @@ let package = Package(
 
     dependencies: [
 
-        // FIXED:
-        // Replaced unstable branch dependency
-        // with a pinned revision dependency
-
+        // ❗ MUST use branch OR tag, not revision placeholder
         .package(
             url: "https://github.com/ggerganov/llama.cpp",
-            revision: "master"
+            branch: "master"
         ),
 
         .package(
@@ -41,18 +38,19 @@ let package = Package(
 
         .target(
             name: "LLamaSwift",
-
             dependencies: [
 
-                .product(
-                    name: "llama",
-                    package: "llama.cpp"
-                ),
-
+                // ❗ llama.cpp is NOT a Swift product
+                // You must NOT reference it like this unless you added a SwiftPM wrapper
                 .product(
                     name: "Logging",
                     package: "swift-log"
                 )
+            ],
+
+            linkerSettings: [
+                // llama.cpp must be linked manually via CMake/Xcode build step
+                .linkedLibrary("llama")
             ]
         ),
 
